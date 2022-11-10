@@ -1,0 +1,37 @@
+name: Pave production env
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  terraform:
+    name: Terraform
+    environment: production
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }} 
+    steps:
+    - uses: actions/checkout@v3
+    - uses: vmware-tanzu/carvel-setup-action@v1
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Init Terraform
+      run: make init
+    - name: Run Terraform
+      run: make all
+      env:
+        TF_VAR_tanzu_net_username: ${{ secrets.TANZU_NET_USERNAME }}
+        TF_VAR_tanzu_net_password: ${{ secrets.TANZU_NET_PASSWORD }}
+        TF_VAR_tap_registry_username: ${{ secrets.TAP_REGISTRY_USERNAME }}
+        TF_VAR_tap_registry_password: ${{ secrets.TAP_REGISTRY_PASSWORD }}
+        TF_VAR_tap_registry_hostname: ${{ secrets.TAP_REGISTRY_HOSTNAME }}
+        TF_VAR_tap_registry_repo: ${{ secrets.TAP_REGISTRY_REPO }}
+        TF_VAR_github_access_token: ${{ secrets.GH_ACCESS_TOKEN }}
+        TF_VAR_github_oidc_clientId: ${{ secrets.GH_OIDC_CLIENTID }}
+        TF_VAR_github_oidc_clientSecret: ${{ secrets.GH_OIDC_CLIENTSECRET }}

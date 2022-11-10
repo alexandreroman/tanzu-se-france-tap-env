@@ -1,0 +1,8 @@
+.DS_Store
+.terraform*
+terraform.tfstate*
+terraform.lock.*
+terraform.tfvars
+*.kubeconfig
+tap.yaml
+tap-bootstrap.yaml
